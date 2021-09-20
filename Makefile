@@ -35,6 +35,14 @@ IMAGE_TAG?=$(GIT_COMMIT)
 IMAGE_TRACK=latest
 endif
 
+.PHONY: redis.up
+redis.up:
+	docker-compose --file docker-compose.yaml up --build -d
+
+.PHONY: redis.down
+redis.down:
+	docker-compose --file docker-compose.yaml down
+
 .PHONY: run
 run:
 	go run ./main.go
