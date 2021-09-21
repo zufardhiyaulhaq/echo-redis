@@ -8,6 +8,7 @@ type Settings struct {
 	RedisEventPort string   `envconfig:"PORT"`
 	RedisCluster   bool     `envconfig:"REDIS_CLUSTER"`
 	RedisHosts     []string `envconfig:"REDIS_HOST"`
+	RedisRetry     int      `envconfig:"REDIS_RETRY" default:"-1"`
 }
 
 func NewSettings() (Settings, error) {

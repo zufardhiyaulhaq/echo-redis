@@ -18,9 +18,9 @@ func main() {
 
 	var redisClient redis_client.RedisClient
 	if settings.RedisCluster {
-		redisClient = redis_client.NewCluster(settings.RedisHosts)
+		redisClient = redis_client.NewCluster(settings)
 	} else {
-		redisClient = redis_client.New(settings.RedisHosts[0])
+		redisClient = redis_client.New(settings)
 	}
 
 	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
