@@ -11,6 +11,7 @@ RUN addgroup -g 10001 echo-redis && \
     chown echo-redis:0 /home/echo-redis && \
     chmod g=u /home/echo-redis && \
     chmod g=u /etc/passwd
+RUN apk add --update --no-cache alpine-sdk curl
 
 ENV USER=echo-redis
 USER 10001
