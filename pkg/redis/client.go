@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 )
 
 var ctx = context.Background()
@@ -39,9 +40,10 @@ func (r RedisClient) Close() error {
 	return r.Client.Close()
 }
 
-func NewCluster(address []string) RedisClient {
+func NewCluster(settings settings.Settings) RedisClient {
 	client := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs: address,
+		Addrs:      settings.RedisHosts,
+		MaxRetries: settings.RedisRetry,
 	})
 
 	return RedisClient{
@@ -49,9 +51,10 @@ func NewCluster(address []string) RedisClient {
 	}
 }
 
-func New(address string) RedisClient {
+func New(settings settings.Settings) RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Addr: address,
+		Addr:       settings.RedisHosts[0],
+		MaxRetries: settings.RedisRetry,
 	})
 
 	return RedisClient{
