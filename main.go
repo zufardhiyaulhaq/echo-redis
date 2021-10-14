@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/tidwall/evio"
+	"github.com/zufardhiyaulhaq/echo-redis/pkg/netstat"
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 
 	redis_client "github.com/zufardhiyaulhaq/echo-redis/pkg/redis"
@@ -22,6 +26,8 @@ func main() {
 	} else {
 		redisClient = redis_client.New(settings)
 	}
+
+	go printNetstat()
 
 	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
 		key := uuid.NewString()
@@ -53,5 +59,18 @@ func main() {
 			panic(err)
 		}
 	}()
+}
 
+func printNetstat() {
+	for {
+		socks, err := netstat.TCPSocks(netstat.NoopFilter)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
+		for _, e := range socks {
+			fmt.Printf("%v\n", e)
+		}
+
+		time.Sleep(1 * time.Second)
+	}
 }
