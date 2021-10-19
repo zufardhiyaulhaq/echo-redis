@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -60,13 +59,15 @@ func (e Server) ServeHTTP() {
 
 	r.HandleFunc("/redis/{key}", handler.Handle)
 	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello!")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Hello!"))
 	})
 	r.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello!")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Hello!"))
 	})
 
-	http.ListenAndServe("0.0.0.0:80", r)
+	http.ListenAndServe(":80", r)
 }
 
 type Handler struct {
