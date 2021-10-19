@@ -44,7 +44,7 @@ func NewCluster(settings settings.Settings) RedisClient {
 	client := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:       settings.RedisHosts,
 		MaxRetries:  settings.RedisRetry,
-		IdleTimeout: -1,
+		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{
@@ -56,7 +56,7 @@ func New(settings settings.Settings) RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:        settings.RedisHosts[0],
 		MaxRetries:  settings.RedisRetry,
-		IdleTimeout: -1,
+		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{

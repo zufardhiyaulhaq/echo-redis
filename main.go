@@ -1,76 +1,47 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"sync"
 
-	"github.com/google/uuid"
-	"github.com/tidwall/evio"
-	"github.com/zufardhiyaulhaq/echo-redis/pkg/netstat"
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 
 	redis_client "github.com/zufardhiyaulhaq/echo-redis/pkg/redis"
 )
 
 func main() {
-	var events evio.Events
 
 	settings, err := settings.NewSettings()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var redisClient redis_client.RedisClient
+	var client redis_client.RedisClient
 	if settings.RedisCluster {
-		redisClient = redis_client.NewCluster(settings)
+		client = redis_client.NewCluster(settings)
 	} else {
-		redisClient = redis_client.New(settings)
+		client = redis_client.New(settings)
 	}
 
-	go printNetstat()
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 
-	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
-		key := uuid.NewString()
-		value := string(in)
+	server := NewServer(settings, client)
 
-		err := redisClient.Set(key, value)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
+	go func() {
+		server.ServeEcho()
+		wg.Done()
+	}()
 
-		valueRedis, err := redisClient.Get(key)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
+	go func() {
+		server.ServeHTTP()
+		wg.Done()
+	}()
 
-		out = []byte(valueRedis)
-
-		return
-	}
-
-	if err := evio.Serve(events, "tcp://0.0.0.0:"+settings.RedisEventPort); err != nil {
-		panic(err.Error())
-	}
+	wg.Wait()
 
 	defer func() {
-		if err = redisClient.Close(); err != nil {
+		if err = client.Close(); err != nil {
 			panic(err)
 		}
 	}()
-}
-
-func printNetstat() {
-	for {
-		socks, err := netstat.TCPSocks(netstat.NoopFilter)
-		if err != nil {
-			fmt.Printf(err.Error())
-		}
-		for _, e := range socks {
-			fmt.Printf("%v\n", e)
-		}
-
-		time.Sleep(1 * time.Second)
-	}
 }

@@ -45,7 +45,7 @@ redis.down:
 
 .PHONY: run
 run:
-	go run ./main.go
+	go run .
 
 .PHONY: build
 build:
