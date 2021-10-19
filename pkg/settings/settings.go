@@ -5,7 +5,8 @@ import (
 )
 
 type Settings struct {
-	RedisEventPort   string   `envconfig:"PORT"`
+	EchoPort         string   `envconfig:"ECHO_PORT" default:"5000"`
+	HTTPPort         string   `envconfig:"HTTP_PORT" default:"80"`
 	RedisCluster     bool     `envconfig:"REDIS_CLUSTER"`
 	RedisHosts       []string `envconfig:"REDIS_HOST"`
 	RedisIdleTiemout int      `envconfig:"REDIS_IDLE_TIMEOUT" default:"-1"`

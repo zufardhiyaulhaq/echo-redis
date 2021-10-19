@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 	"github.com/tidwall/evio"
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 
@@ -47,8 +48,8 @@ func (e Server) ServeEcho() {
 		return
 	}
 
-	if err := evio.Serve(events, "tcp://0.0.0.0:"+e.settings.RedisEventPort); err != nil {
-		panic(err.Error())
+	if err := evio.Serve(events, "tcp://0.0.0.0:"+e.settings.EchoPort); err != nil {
+		log.Fatal().Err(err)
 	}
 }
 
@@ -67,7 +68,10 @@ func (e Server) ServeHTTP() {
 		w.Write([]byte("Hello!"))
 	})
 
-	http.ListenAndServe(":80", r)
+	err := http.ListenAndServe(":"+e.settings.HTTPPort, r)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 }
 
 type Handler struct {
