@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -56,7 +57,15 @@ func (e Server) ServeHTTP() {
 	handler := NewHandler(e.settings, e.client)
 
 	r := mux.NewRouter()
+
 	r.HandleFunc("/redis/{key}", handler.Handle)
+	r.HandleFunc("/livez", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello!")
+	})
+	r.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello!")
+	})
+
 	http.ListenAndServe("0.0.0.0:80", r)
 }
 
