@@ -28,12 +28,12 @@ func main() {
 	server := NewServer(settings, client)
 
 	go func() {
-		server.ServeEcho()
+		server.ServeHTTP()
 		wg.Done()
 	}()
 
 	go func() {
-		server.ServeHTTP()
+		server.ServeEcho()
 		wg.Done()
 	}()
 
