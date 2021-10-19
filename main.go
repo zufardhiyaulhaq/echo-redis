@@ -1,57 +1,47 @@
 package main
 
 import (
-	"github.com/google/uuid"
-	"github.com/tidwall/evio"
+	"sync"
+
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 
 	redis_client "github.com/zufardhiyaulhaq/echo-redis/pkg/redis"
 )
 
 func main() {
-	var events evio.Events
 
 	settings, err := settings.NewSettings()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var redisClient redis_client.RedisClient
+	var client redis_client.RedisClient
 	if settings.RedisCluster {
-		redisClient = redis_client.NewCluster(settings)
+		client = redis_client.NewCluster(settings)
 	} else {
-		redisClient = redis_client.New(settings)
+		client = redis_client.New(settings)
 	}
 
-	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
-		key := uuid.NewString()
-		value := string(in)
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 
-		err := redisClient.Set(key, value)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
+	server := NewServer(settings, client)
 
-		valueRedis, err := redisClient.Get(key)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
+	go func() {
+		server.ServeEcho()
+		wg.Done()
+	}()
 
-		out = []byte(valueRedis)
+	go func() {
+		server.ServeHTTP()
+		wg.Done()
+	}()
 
-		return
-	}
-
-	if err := evio.Serve(events, "tcp://0.0.0.0:"+settings.RedisEventPort); err != nil {
-		panic(err.Error())
-	}
+	wg.Wait()
 
 	defer func() {
-		if err = redisClient.Close(); err != nil {
+		if err = client.Close(); err != nil {
 			panic(err)
 		}
 	}()
-
 }

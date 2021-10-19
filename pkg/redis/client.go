@@ -42,8 +42,9 @@ func (r RedisClient) Close() error {
 
 func NewCluster(settings settings.Settings) RedisClient {
 	client := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:      settings.RedisHosts,
-		MaxRetries: settings.RedisRetry,
+		Addrs:       settings.RedisHosts,
+		MaxRetries:  settings.RedisRetry,
+		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{
@@ -53,8 +54,9 @@ func NewCluster(settings settings.Settings) RedisClient {
 
 func New(settings settings.Settings) RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Addr:       settings.RedisHosts[0],
-		MaxRetries: settings.RedisRetry,
+		Addr:        settings.RedisHosts[0],
+		MaxRetries:  settings.RedisRetry,
+		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{
