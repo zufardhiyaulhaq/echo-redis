@@ -49,7 +49,7 @@ run:
 
 .PHONY: build
 build:
-	CGO_ENABLED=0 GO111MODULE=on go build -a -ldflags '${LDFLAGS}' -o ${BIN_DIR}/echo-redis ./main.go
+	CGO_ENABLED=0 GO111MODULE=on go build -a -ldflags '${LDFLAGS}' -o ${BIN_DIR}/echo-redis .
 
 .PHONY: image.build
 image.build:
