@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
-	"github.com/tidwall/evio"
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 
 	redis_client "github.com/zufardhiyaulhaq/echo-redis/pkg/redis"
@@ -21,35 +20,6 @@ func NewServer(settings settings.Settings, client redis_client.RedisClient) Serv
 	return Server{
 		settings: settings,
 		client:   client,
-	}
-}
-
-func (e Server) ServeEcho() {
-	var events evio.Events
-
-	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
-		key := uuid.NewString()
-		value := string(in)
-
-		err := e.client.Set(key, value)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
-
-		data, err := e.client.Get(key)
-		if err != nil {
-			out = []byte(err.Error())
-			return
-		}
-
-		out = []byte(key + ":" + data)
-
-		return
-	}
-
-	if err := evio.Serve(events, "tcp://0.0.0.0:"+e.settings.EchoPort); err != nil {
-		log.Fatal().Err(err)
 	}
 }
 

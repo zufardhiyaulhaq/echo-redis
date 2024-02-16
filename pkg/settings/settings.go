@@ -5,7 +5,6 @@ import (
 )
 
 type Settings struct {
-	EchoPort         string   `envconfig:"ECHO_PORT" default:"5000"`
 	HTTPPort         string   `envconfig:"HTTP_PORT" default:"80"`
 	RedisCluster     bool     `envconfig:"REDIS_CLUSTER"`
 	RedisHosts       []string `envconfig:"REDIS_HOST"`

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/zufardhiyaulhaq/echo-redis/pkg/settings"
 )
 
@@ -42,9 +42,9 @@ func (r RedisClient) Close() error {
 
 func NewCluster(settings settings.Settings) RedisClient {
 	client := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:       settings.RedisHosts,
-		MaxRetries:  settings.RedisRetry,
-		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
+		Addrs:           settings.RedisHosts,
+		MaxRetries:      settings.RedisRetry,
+		ConnMaxIdleTime: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{
@@ -54,9 +54,9 @@ func NewCluster(settings settings.Settings) RedisClient {
 
 func New(settings settings.Settings) RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Addr:        settings.RedisHosts[0],
-		MaxRetries:  settings.RedisRetry,
-		IdleTimeout: time.Duration(settings.RedisIdleTiemout) * time.Second,
+		Addr:            settings.RedisHosts[0],
+		MaxRetries:      settings.RedisRetry,
+		ConnMaxIdleTime: time.Duration(settings.RedisIdleTiemout) * time.Second,
 	})
 
 	return RedisClient{

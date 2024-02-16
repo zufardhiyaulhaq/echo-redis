@@ -5,16 +5,11 @@ Echo server that connect to Redis server to test connectivity.
 1. Run
 ```
 source .env.example
+make redis.up
 make run
 ```
 
-2. Telnet & use echo
+2. test curl
 ```
-telnet localhost 5000
-Trying ::1...
-Connected to localhost.
-Escape character is '^]'.
-
-echo
-echo
+curl http://localhost:80/redis/test
 ```

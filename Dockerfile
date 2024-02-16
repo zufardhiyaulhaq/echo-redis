@@ -1,7 +1,7 @@
 #################
 # Base image
 #################
-FROM alpine:3.12 as echo-redis-base
+FROM alpine:3.19.1 as echo-redis-base
 
 USER root
 
@@ -20,7 +20,7 @@ WORKDIR /home/echo-redis
 #################
 # Builder image
 #################
-FROM golang:1.16-alpine AS echo-redis-builder
+FROM golang:1.21-alpine AS echo-redis-builder
 RUN apk add --update --no-cache alpine-sdk
 WORKDIR /app
 COPY . .
